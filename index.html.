@@ -1,132 +1,123 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>لعبة تركيب الصور</title>
+    <title>بحر الألغاز - 100 مستوى</title>
+    <script async src="https://googlesyndication.com" crossorigin="anonymous"></script>
     <style>
-        /* تصميم الواجهة */
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #1a1a2e;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            color: white;
-            height: 100vh;
-            touch-action: none; /* لمنع اهتزاز الصفحة أثناء اللمس */
-        }
-
-        h2 { margin-top: 20px; }
-
-        #game-container {
-            position: relative;
-            width: 350px;
-            height: 450px;
-            background: #16213e;
-            border: 2px solid #0f3460;
-            border-radius: 15px;
-            margin-top: 20px;
-        }
-
-        /* الهدف (المكان الصحيح) */
-        #target {
-            width: 100px;
-            height: 100px;
-            border: 3px dashed #4e4e4e;
-            position: absolute;
-            top: 50px;
-            left: 125px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        /* قطعة البازل */
-        #piece {
-            width: 100px;
-            height: 100px;
-            background: #e94560; /* يمكنك استبدالها بصورة لاحقاً */
-            position: absolute;
-            bottom: 50px;
-            left: 125px;
-            border-radius: 10px;
-            cursor: grab;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        #status {
-            margin-top: 20px;
-            font-weight: bold;
-            color: #00d2d3;
-        }
+        :root { --main: #e94560; --bg: #1a1a2e; --accent: #16213e; }
+        body { margin: 0; background: var(--bg); color: white; font-family: sans-serif; overflow: hidden; touch-action: none; display: flex; flex-direction: column; height: 100vh; }
+        #splash-screen { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .logo { width: 120px; height: 120px; background: white; border-radius: 25px; margin-bottom: 20px; animation: bounce 2s infinite; overflow: hidden; }
+        .logo img { width: 100%; height: 100%; object-fit: cover; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        #ui { padding: 10px; display: flex; justify-content: space-between; background: var(--accent); align-items: center; z-index: 10; border-bottom: 2px solid var(--main); }
+        #game-container { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; }
+        #board { position: relative; width: 300px; height: 300px; background: #0f3460; border: 5px solid var(--accent); margin: 10px auto; display: grid; grid-template-columns: repeat(3, 100px); grid-template-rows: repeat(3, 100px); }
+        .target { width: 100px; height: 100px; border: 0.5px solid rgba(255,255,255,0.1); }
+        .piece { width: 100px; height: 100px; position: absolute; cursor: grab; background-size: 300px 300px; border-radius: 8px; z-index: 10; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
+        .btn { padding: 15px 35px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; background: var(--main); color: white; font-size: 1.2rem; }
+        #next-btn { display: none; margin: 10px auto; background: #2ecc71; }
+        #mute-btn { background: none; border: 2px solid white; border-radius: 50%; width: 45px; height: 45px; color: white; }
+        #pieces-area { width: 100%; height: 150px; background: rgba(255,255,255,0.05); position: relative; border-top: 2px solid var(--accent); }
+        #win-dialog { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .firework { position: absolute; width: 5px; height: 5px; border-radius: 50%; animation: firework-animation 2s infinite; }
+        @keyframes firework-animation { 0% { transform: translateY(100vh); opacity: 1; } 100% { transform: translateY(-50vh); width: 500px; opacity: 0; box-shadow: 150px 150px #ff0, -150px -150px #f0f, 200px -100px #0ff; } }
     </style>
 </head>
 <body>
-
-    <h2>لعبة تركيب الصور</h2>
-    <div id="game-container">
-        <div id="target"></div>
-        <div id="piece">اسحبني</div>
+    <div id="splash-screen">
+        <div class="logo"><img src="assets/audio/icon.png"></div>
+        <h1 style="color: var(--main);">بحر الألغاز</h1>
+        <button class="btn" onclick="startGame()">ابدأ المغامرة</button>
     </div>
-    <div id="status">حاول وضع القطعة في الإطار</div>
-
+    <div id="ui">
+        <div id="lvl-txt">المستوى: 1</div>
+        <div id="timer-txt">00:00</div>
+        <button id="mute-btn" onclick="toggleMute()">🔊</button>
+    </div>
+    <div id="game-container">
+        <div id="board">
+            <div class="target"></div><div class="target"></div><div class="target"></div>
+            <div class="target"></div><div class="target"></div><div class="target"></div>
+            <div class="target"></div><div class="target"></div><div class="target"></div>
+        </div>
+        <button id="next-btn" class="btn" onclick="goToNextLevel()">المستوى التالي ⮕</button>
+        <div id="pieces-area"></div>
+    </div>
+    <div id="win-dialog">
+        <h1 style="color: #f1c40f;">🏆 عبقري الألغاز! 🏆</h1>
+        <button class="btn" onclick="location.reload()">العب من جديد</button>
+    </div>
+    <audio id="bg-music" loop src="assets/audio/music.mp3"></audio>
+    <audio id="pop-sound" src="https://google.com"></audio>
+    <audio id="win-sound" src="https://myinstants.com"></audio>
     <script>
-        const piece = document.getElementById('piece');
-        const target = document.getElementById('target');
-        const status = document.getElementById('status');
-
-        let isDragging = false;
-
-        // دالة التحريك
-        function move(e) {
-            if (!isDragging) return;
-            
-            let x = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-            let y = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
-
-            // ضبط القطعة لتكون تحت الإصبع/الماوس
-            const container = document.getElementById('game-container').getBoundingClientRect();
-            piece.style.left = (x - container.left - 50) + 'px';
-            piece.style.top = (y - container.top - 50) + 'px';
+        let level = 1, solved = 0, seconds = 0, muted = false;
+        function startGame() {
+            document.getElementById('splash-screen').style.display = 'none';
+            document.getElementById('bg-music').play().catch(() => {});
+            setInterval(() => { seconds++; let m=Math.floor(seconds/60), s=seconds%60; document.getElementById('timer-txt').innerText = `${m<10?'0':''}${m}:${s<10?'0':''}${s}`; }, 1000);
+            loadLevel();
         }
-
-        // بدء السحب
-        function startDragging() { isDragging = true; piece.style.cursor = 'grabbing'; }
-
-        // نهاية السحب والتحقق من الفوز
-        function stopDragging() {
-            if (!isDragging) return;
-            isDragging = false;
-
-            const pRect = piece.getBoundingClientRect();
-            const tRect = target.getBoundingClientRect();
-
-            // حساب المسافة بين القطعة والهدف (منطق الالتصاق Snap)
-            const diffX = Math.abs(pRect.left - tRect.left);
-            const diffY = Math.abs(pRect.top - tRect.top);
-
-            if (diffX < 40 && diffY < 40) {
-                // التصاق ناجح
-                piece.style.left = '125px';
-                piece.style.top = '50px';
-                piece.style.background = '#00d2d3';
-                piece.innerHTML = "✓";
-                status.innerText = "أحسنت! تم التركيب بنجاح";
-                piece.onmousedown = piece.ontouchstart = null; // تعطيل السحب
+        function loadLevel() {
+            const area = document.getElementById('pieces-area');
+            area.innerHTML = ""; solved = 0;
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('lvl-txt').innerText = `المستوى: ${level}`;
+            const img = `https://picsum.photos{level}`;
+            for (let i = 0; i < 9; i++) {
+                const p = document.createElement('div');
+                p.className = 'piece';
+                p.style.backgroundImage = `url(${img})`;
+                let r = Math.floor(i / 3), c = i % 3;
+                p.style.backgroundPosition = `-${c * 100}px -${r * 100}px`;
+                p.style.left = Math.random() * (window.innerWidth - 110) + 'px';
+                p.style.top = Math.random() * 40 + 'px';
+                makeDraggable(p, i);
+                area.appendChild(p);
             }
         }
-
-        // مستمعات الأحداث (الماوس واللمس)
-        piece.onmousedown = piece.ontouchstart = startDragging;
-        window.onmousemove = window.ontouchmove = move;
-        window.onmouseup = window.ontouchend = stopDragging;
-
+        function makeDraggable(el, id) {
+            let drag = false;
+            el.ontouchstart = () => { drag = true; el.style.zIndex = 100; };
+            window.ontouchmove = (e) => {
+                if (!drag) return;
+                let t = e.touches[0];
+                const container = document.getElementById('game-container').getBoundingClientRect();
+                el.style.left = (t.clientX - 50) + 'px';
+                el.style.top = (t.clientY - container.top - 150) + 'px';
+            };
+            window.ontouchend = () => { if (drag) { drag = false; checkSnap(el, id); } };
+        }
+        function checkSnap(el, id) {
+            const targets = document.querySelectorAll('.target');
+            const tRect = targets[id].getBoundingClientRect();
+            const pRect = el.getBoundingClientRect();
+            const container = document.getElementById('game-container').getBoundingClientRect();
+            if (Math.abs(pRect.left - tRect.left) < 40 && Math.abs(pRect.top - tRect.top) < 40) {
+                el.style.left = tRect.left + 'px';
+                el.style.top = (tRect.top - container.top) + 'px';
+                el.style.pointerEvents = 'none';
+                document.getElementById('pop-sound').play();
+                solved++;
+                if (solved === 9) document.getElementById('next-btn').style.display = 'block';
+            }
+        }
+        function goToNextLevel() {
+            if (level === 100) {
+                document.getElementById('win-dialog').style.display = 'flex';
+                document.getElementById('win-sound').play();
+            } else {
+                level++; loadLevel();
+            }
+        }
+        function toggleMute() {
+            muted = !muted;
+            document.getElementById('bg-music').muted = muted;
+            document.getElementById('mute-btn').innerText = muted ? "🔇" : "🔊";
+        }
     </script>
 </body>
 </html>
