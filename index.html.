@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>لعبة تركيب الصور</title>
+    <style>
+        /* تصميم الواجهة */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a2e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            color: white;
+            height: 100vh;
+            touch-action: none; /* لمنع اهتزاز الصفحة أثناء اللمس */
+        }
+
+        h2 { margin-top: 20px; }
+
+        #game-container {
+            position: relative;
+            width: 350px;
+            height: 450px;
+            background: #16213e;
+            border: 2px solid #0f3460;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        /* الهدف (المكان الصحيح) */
+        #target {
+            width: 100px;
+            height: 100px;
+            border: 3px dashed #4e4e4e;
+            position: absolute;
+            top: 50px;
+            left: 125px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* قطعة البازل */
+        #piece {
+            width: 100px;
+            height: 100px;
+            background: #e94560; /* يمكنك استبدالها بصورة لاحقاً */
+            position: absolute;
+            bottom: 50px;
+            left: 125px;
+            border-radius: 10px;
+            cursor: grab;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        #status {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #00d2d3;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>لعبة تركيب الصور</h2>
+    <div id="game-container">
+        <div id="target"></div>
+        <div id="piece">اسحبني</div>
+    </div>
+    <div id="status">حاول وضع القطعة في الإطار</div>
+
+    <script>
+        const piece = document.getElementById('piece');
+        const target = document.getElementById('target');
+        const status = document.getElementById('status');
+
+        let isDragging = false;
+
+        // دالة التحريك
+        function move(e) {
+            if (!isDragging) return;
+            
+            let x = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+            let y = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+
+            // ضبط القطعة لتكون تحت الإصبع/الماوس
+            const container = document.getElementById('game-container').getBoundingClientRect();
+            piece.style.left = (x - container.left - 50) + 'px';
+            piece.style.top = (y - container.top - 50) + 'px';
+        }
+
+        // بدء السحب
+        function startDragging() { isDragging = true; piece.style.cursor = 'grabbing'; }
+
+        // نهاية السحب والتحقق من الفوز
+        function stopDragging() {
+            if (!isDragging) return;
+            isDragging = false;
+
+            const pRect = piece.getBoundingClientRect();
+            const tRect = target.getBoundingClientRect();
+
+            // حساب المسافة بين القطعة والهدف (منطق الالتصاق Snap)
+            const diffX = Math.abs(pRect.left - tRect.left);
+            const diffY = Math.abs(pRect.top - tRect.top);
+
+            if (diffX < 40 && diffY < 40) {
+                // التصاق ناجح
+                piece.style.left = '125px';
+                piece.style.top = '50px';
+                piece.style.background = '#00d2d3';
+                piece.innerHTML = "✓";
+                status.innerText = "أحسنت! تم التركيب بنجاح";
+                piece.onmousedown = piece.ontouchstart = null; // تعطيل السحب
+            }
+        }
+
+        // مستمعات الأحداث (الماوس واللمس)
+        piece.onmousedown = piece.ontouchstart = startDragging;
+        window.onmousemove = window.ontouchmove = move;
+        window.onmouseup = window.ontouchend = stopDragging;
+
+    </script>
+</body>
+</html>
