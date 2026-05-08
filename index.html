@@ -2,8 +2,11 @@
 <html lang="ar" dir="rtl">
 
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, user-scalable=no">
 
 <title>بحر الألغاز</title>
 
@@ -38,8 +41,9 @@ body{
 #splash{
     position:fixed;
     inset:0;
-    z-index:9999;
     background:var(--bg);
+    z-index:9999;
+
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -53,6 +57,7 @@ body{
     overflow:hidden;
     border:4px solid var(--main);
     margin-bottom:20px;
+
     animation:bounce 2s infinite;
 }
 
@@ -63,14 +68,19 @@ body{
 }
 
 @keyframes bounce{
-    0%,100%{transform:translateY(0);}
-    50%{transform:translateY(-15px);}
+    0%,100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-15px);
+    }
 }
 
 .btn{
-    border:none;
     background:var(--main);
     color:white;
+    border:none;
     padding:14px 30px;
     border-radius:12px;
     font-size:18px;
@@ -78,15 +88,18 @@ body{
     cursor:pointer;
 }
 
-/* الواجهة */
+/* الأعلى */
 
 #topbar{
     height:60px;
     background:var(--accent);
+
     display:flex;
     align-items:center;
     justify-content:space-between;
+
     padding:0 15px;
+
     border-bottom:2px solid var(--main);
 }
 
@@ -94,22 +107,30 @@ body{
 
 #game{
     flex:1;
+
     display:flex;
     flex-direction:column;
     align-items:center;
+
     position:relative;
 }
 
-/* البورد */
+/* لوحة البازل */
 
 #board{
     width:300px;
     height:300px;
+
     margin-top:15px;
-    background:#0f3460;
-    border:4px solid var(--main);
+
     position:relative;
+
+    background:#0f3460;
+
+    border:4px solid var(--main);
+
     display:grid;
+
     grid-template-columns:repeat(3,100px);
     grid-template-rows:repeat(3,100px);
 }
@@ -123,82 +144,100 @@ body{
 #pieces-area{
     width:100%;
     height:260px;
+
     position:relative;
+
     overflow:visible;
 }
 
 /* قطع البازل */
 
 .piece{
+
     width:100px;
     height:100px;
+
     position:absolute;
+
     background-size:300px 300px;
     background-repeat:no-repeat;
+
     cursor:grab;
+
     z-index:10;
+
     touch-action:none;
 
-    border-radius:20px;
-
     box-shadow:
-    0 4px 10px rgba(0,0,0,0.5);
+    0 5px 12px rgba(0,0,0,0.5);
+
+    /* شكل البازل */
 
     clip-path:polygon(
         0% 0%,
         35% 0%,
-        50% 12%,
+        50% 10%,
         65% 0%,
         100% 0%,
         100% 35%,
-        88% 50%,
+        90% 50%,
         100% 65%,
         100% 100%,
         65% 100%,
-        50% 88%,
+        50% 90%,
         35% 100%,
         0% 100%,
         0% 65%,
-        12% 50%,
+        10% 50%,
         0% 35%
     );
+
 }
 
 /* زر التالي */
 
 #next-btn{
-    display:none;
     margin-top:10px;
+
+    display:none;
+
     background:#2ecc71;
 }
 
 /* الفوز */
 
 #winner{
+
     position:fixed;
     inset:0;
+
     background:rgba(0,0,0,0.95);
+
+    z-index:99999;
+
     display:none;
+
     flex-direction:column;
     justify-content:center;
     align-items:center;
-    z-index:99999;
+
     text-align:center;
 }
 
 </style>
+
 </head>
 
 <body>
 
-<!-- أصوات -->
+<!-- الأصوات -->
 
-<audio id="popSound"
-src="https://www.soundjay.com/buttons/sounds/button-16.mp3">
+<audio id="snapSound"
+src="assets/audio/music.mp3">
 </audio>
 
 <audio id="winSound"
-src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3">
+src="assets/audio/music.mp3">
 </audio>
 
 <!-- البداية -->
@@ -206,15 +245,22 @@ src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3">
 <div id="splash">
 
     <div class="logo">
-        <img src="https://picsum.photos/200">
+
+        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=300">
+
     </div>
 
     <h1 style="margin-bottom:20px;">
+
         بحر الألغاز
+
     </h1>
 
-    <button class="btn" onclick="startGame()">
+    <button class="btn"
+    onclick="startGame()">
+
         ابدأ اللعبة
+
     </button>
 
 </div>
@@ -224,11 +270,15 @@ src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3">
 <div id="topbar">
 
     <div id="levelText">
+
         المستوى: 1
+
     </div>
 
     <div id="timer">
+
         00:00
+
     </div>
 
 </div>
@@ -236,6 +286,8 @@ src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3">
 <!-- اللعبة -->
 
 <div id="game">
+
+    <!-- البورد -->
 
     <div id="board">
 
@@ -253,6 +305,8 @@ src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3">
 
     </div>
 
+    <!-- التالي -->
+
     <button id="next-btn"
     class="btn"
     onclick="nextLevel()">
@@ -261,16 +315,20 @@ src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3">
 
     </button>
 
+    <!-- القطع -->
+
     <div id="pieces-area"></div>
 
 </div>
 
-<!-- النهاية -->
+<!-- الفوز -->
 
 <div id="winner">
 
     <h1 style="font-size:45px; color:gold;">
+
         🏆 فزت 🏆
+
     </h1>
 
     <br>
@@ -286,25 +344,34 @@ src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3">
 
 <script>
 
+/* المتغيرات */
+
 let level = 1;
+
 let solved = 0;
+
 let seconds = 0;
 
 /* بدء اللعبة */
 
 function startGame(){
 
-    document.getElementById("splash")
+    document
+    .getElementById("splash")
     .style.display = "none";
 
     setInterval(()=>{
 
         seconds++;
 
-        let m = Math.floor(seconds / 60);
-        let s = seconds % 60;
+        let m =
+        Math.floor(seconds / 60);
 
-        document.getElementById("timer")
+        let s =
+        seconds % 60;
+
+        document
+        .getElementById("timer")
         .innerText =
         `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 
@@ -313,25 +380,31 @@ function startGame(){
     loadLevel();
 }
 
-/* تحميل مستوى */
+/* تحميل المستوى */
 
 function loadLevel(){
 
     solved = 0;
 
-    document.getElementById("next-btn")
+    document
+    .getElementById("next-btn")
     .style.display = "none";
 
-    document.getElementById("levelText")
-    .innerText = `المستوى: ${level}`;
+    document
+    .getElementById("levelText")
+    .innerText =
+    `المستوى: ${level}`;
 
     const area =
-    document.getElementById("pieces-area");
+    document
+    .getElementById("pieces-area");
 
     area.innerHTML = "";
 
+    /* صورة ثابتة */
+
     const img =
-    `https://picsum.photos/300?random=${level}`;
+    "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=300";
 
     for(let i=0;i<9;i++){
 
@@ -342,8 +415,11 @@ function loadLevel(){
 
         piece.dataset.id = i;
 
-        let row = Math.floor(i / 3);
-        let col = i % 3;
+        let row =
+        Math.floor(i / 3);
+
+        let col =
+        i % 3;
 
         piece.style.backgroundImage =
         `url(${img})`;
@@ -373,6 +449,7 @@ function makeDraggable(piece){
     let dragging = false;
 
     let offsetX = 0;
+
     let offsetY = 0;
 
     piece.addEventListener("pointerdown",(e)=>{
@@ -411,7 +488,7 @@ function makeDraggable(piece){
     });
 }
 
-/* فحص المكان */
+/* الالتصاق */
 
 function checkSnap(piece){
 
@@ -424,36 +501,45 @@ function checkSnap(piece){
     const target =
     targets[id];
 
-    const tRect =
-    target.getBoundingClientRect();
-
-    const pRect =
-    piece.getBoundingClientRect();
+    const board =
+    document
+    .getElementById("board");
 
     const boardRect =
-    document.getElementById("board")
-    .getBoundingClientRect();
+    board.getBoundingClientRect();
 
-    if(
+    const targetRect =
+    target.getBoundingClientRect();
 
-        Math.abs(
-            pRect.left - tRect.left
-        ) < 35
+    const pieceRect =
+    piece.getBoundingClientRect();
 
-        &&
+    const dx =
+    Math.abs(
+        pieceRect.left -
+        targetRect.left
+    );
 
-        Math.abs(
-            pRect.top - tRect.top
-        ) < 35
+    const dy =
+    Math.abs(
+        pieceRect.top -
+        targetRect.top
+    );
 
-    ){
+    if(dx < 40 && dy < 40){
+
+        const x =
+        target.offsetLeft;
+
+        const y =
+        target.offsetTop;
 
         piece.style.left =
-        (tRect.left - boardRect.left)
+        (board.offsetLeft + x)
         + "px";
 
         piece.style.top =
-        (tRect.top - boardRect.top + 75)
+        (board.offsetTop + y)
         + "px";
 
         piece.style.pointerEvents =
@@ -461,9 +547,15 @@ function checkSnap(piece){
 
         piece.style.zIndex = 1;
 
+        /* صوت */
+
+        const snap =
         document
-        .getElementById("popSound")
-        .play();
+        .getElementById("snapSound");
+
+        snap.currentTime = 0;
+
+        snap.play();
 
         solved++;
 
@@ -476,7 +568,7 @@ function checkSnap(piece){
     }
 }
 
-/* التالي */
+/* المستوى التالي */
 
 function nextLevel(){
 
@@ -501,4 +593,5 @@ function nextLevel(){
 </script>
 
 </body>
+
 </html>
