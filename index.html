@@ -1,172 +1,393 @@
+```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>بحر الألغاز - نسخة البازل الاحترافية</title>
-    <!-- إعلانات جوجل التجريبية -->
-    <script async src="https://googlesyndication.com" crossorigin="anonymous"></script>
-    
-    <style>
-        :root { --main: #e94560; --bg: #1a1a2e; --accent: #16213e; }
-        body { margin: 0; background: var(--bg); color: white; font-family: sans-serif; overflow: hidden; touch-action: none; display: flex; flex-direction: column; height: 100vh; }
-        
-        /* شاشة البداية */
-        #splash-screen { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .logo { width: 120px; height: 120px; background: white; border-radius: 25px; margin-bottom: 20px; animation: bounce 2s infinite; overflow: hidden; border: 3px solid var(--main); }
-        .logo img { width: 100%; height: 100%; object-fit: cover; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 
-        /* واجهة اللعبة */
-        #ui { padding: 10px; display: flex; justify-content: space-between; background: var(--accent); align-items: center; z-index: 10; border-bottom: 2px solid var(--main); }
-        #game-container { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; }
-        #board { position: relative; width: 300px; height: 300px; background: rgba(15, 52, 96, 0.5); border: 2px dashed var(--main); margin: 10px auto; display: grid; grid-template-columns: repeat(3, 100px); grid-template-rows: repeat(3, 100px); }
-        .target { width: 100px; height: 100px; }
+<title>بحر الألغاز</title>
 
-        /* تصميم قطع البازل الحقيقية */
-        .piece { 
-            width: 120px; height: 120px; /* حجم أكبر قليلاً للسماح بالنتوءات */
-            position: absolute; cursor: grab; 
-            background-size: 300px 300px; 
-            z-index: 10; 
-            filter: drop-shadow(0px 4px 5px rgba(0,0,0,0.5));
-        }
+<style>
+:root{
+    --main:#e94560;
+    --bg:#1a1a2e;
+    --accent:#16213e;
+}
 
-        /* أشكال قطع البازل (نتوءات دائرية) */
-        .p-shape-0 { clip-path: path("M30,30 H70 Q85,30 85,15 T70,0 H30 Q15,0 15,15 T30,30 V70 Q30,85 15,85 T0,70 V30 Q0,15 15,15 T30,30 Z"); }
-        .p-shape-1 { clip-path: path("M30,30 H70 Q85,30 85,45 T100,60 V90 H70 Q55,90 55,105 T70,120 H30 Q15,120 15,105 T30,90 V60 Q30,45 15,45 T0,30 Z"); }
-        .p-shape-2 { clip-path: path("M30,0 H70 V30 Q85,30 85,45 T100,60 V90 H70 V120 H30 V90 Q15,90 15,75 T0,60 V30 H30 Z"); }
+*{
+    box-sizing:border-box;
+    user-select:none;
+    -webkit-user-select:none;
+}
 
-        /* أزرار */
-        .btn { padding: 12px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; background: var(--main); color: white; box-shadow: 0 4px #a32d41; }
-        #next-btn { display: none; margin: 5px auto; background: #2ecc71; box-shadow: 0 4px #27ae60; }
-        #mute-btn { background: none; border: 1px solid white; border-radius: 50%; width: 40px; height: 40px; color: white; }
+body{
+    margin:0;
+    overflow:hidden;
+    background:var(--bg);
+    color:white;
+    font-family:sans-serif;
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+}
 
-        #pieces-area { width: 100%; height: 160px; background: rgba(255,255,255,0.05); position: relative; border-top: 2px solid var(--accent); }
+/* شاشة البداية */
+#splash{
+    position:fixed;
+    inset:0;
+    z-index:999;
+    background:var(--bg);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
 
-        /* نافذة الفوز */
-        #win-dialog { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
-    </style>
+.logo{
+    width:120px;
+    height:120px;
+    border-radius:25px;
+    overflow:hidden;
+    border:4px solid var(--main);
+    margin-bottom:20px;
+    animation:bounce 2s infinite;
+}
+
+.logo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+@keyframes bounce{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-15px);}
+}
+
+.btn{
+    background:var(--main);
+    border:none;
+    color:white;
+    padding:14px 30px;
+    border-radius:12px;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* الواجهة */
+#topbar{
+    height:60px;
+    background:var(--accent);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 15px;
+    border-bottom:2px solid var(--main);
+}
+
+#game{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    position:relative;
+}
+
+/* لوحة البازل */
+#board{
+    width:300px;
+    height:300px;
+    margin-top:15px;
+    position:relative;
+    display:grid;
+    grid-template-columns:repeat(3,100px);
+    grid-template-rows:repeat(3,100px);
+    border:3px solid var(--main);
+    background:#0f3460;
+}
+
+.target{
+    border:1px dashed rgba(255,255,255,0.2);
+}
+
+/* منطقة القطع */
+#pieces-area{
+    width:100%;
+    height:220px;
+    position:relative;
+    margin-top:10px;
+    overflow:hidden;
+}
+
+/* القطع */
+.piece{
+    width:100px;
+    height:100px;
+    position:absolute;
+    background-size:300px 300px;
+    background-repeat:no-repeat;
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:10px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.4);
+    touch-action:none;
+}
+
+/* زر التالي */
+#next-btn{
+    margin-top:10px;
+    display:none;
+    background:#2ecc71;
+}
+
+/* نافذة الفوز */
+#winner{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.95);
+    z-index:1000;
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+}
+</style>
 </head>
+
 <body>
 
-    <div id="splash-screen">
-        <div class="logo"><img src="assets/audio/icon.png"></div>
-        <h1 style="color: var(--main);">بحر الألغاز</h1>
-        <button class="btn" onclick="startGame()">ابدأ المغامرة</button>
+<!-- شاشة البداية -->
+<div id="splash">
+
+    <div class="logo">
+        <img src="https://picsum.photos/200" />
     </div>
 
-    <div id="ui">
-        <div id="lvl-txt">المستوى: 1</div>
-        <div id="timer-txt">00:00</div>
-        <button id="mute-btn" onclick="toggleMute()">🔊</button>
+    <h1>بحر الألغاز</h1>
+
+    <button class="btn" onclick="startGame()">
+        ابدأ اللعبة
+    </button>
+
+</div>
+
+<!-- الواجهة -->
+<div id="topbar">
+
+    <div id="level-text">المستوى: 1</div>
+
+    <div id="timer">00:00</div>
+
+</div>
+
+<!-- اللعبة -->
+<div id="game">
+
+    <div id="board">
+        <div class="target"></div>
+        <div class="target"></div>
+        <div class="target"></div>
+        <div class="target"></div>
+        <div class="target"></div>
+        <div class="target"></div>
+        <div class="target"></div>
+        <div class="target"></div>
+        <div class="target"></div>
     </div>
 
-    <div id="game-container">
-        <div id="board">
-            <div class="target"></div><div class="target"></div><div class="target"></div>
-            <div class="target"></div><div class="target"></div><div class="target"></div>
-            <div class="target"></div><div class="target"></div><div class="target"></div>
-        </div>
-        <button id="next-btn" class="btn" onclick="goToNextLevel()">المستوى التالي ⮕</button>
-        <div id="pieces-area"></div>
-    </div>
+    <button id="next-btn" class="btn" onclick="nextLevel()">
+        المستوى التالي
+    </button>
 
-    <div id="win-dialog">
-        <h1 style="color: #f1c40f; font-size: 2.5rem;">🏆 أسطورة الألغاز! 🏆</h1>
-        <p>لقد أنهيت 100 مستوى بنجاح</p>
-        <button class="btn" onclick="location.reload()">العب مجدداً</button>
-    </div>
+    <div id="pieces-area"></div>
 
-    <audio id="bg-music" loop src="assets/audio/music.mp3"></audio>
-    <audio id="pop-sound" src="https://google.com"></audio>
-    <audio id="win-sound" src="https://myinstants.com"></audio>
+</div>
 
-    <script>
-        let level = 1, solved = 0, seconds = 0, muted = false;
+<!-- شاشة النهاية -->
+<div id="winner">
 
-        function startGame() {
-            document.getElementById('splash-screen').style.display = 'none';
-            document.getElementById('bg-music').play().catch(() => {});
-            setInterval(() => {
-                seconds++;
-                let m = Math.floor(seconds / 60), s = seconds % 60;
-                document.getElementById('timer-txt').innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
-            }, 1000);
-            loadLevel();
+    <h1>🏆 انتهت اللعبة 🏆</h1>
+
+    <p>لقد أنهيت جميع المستويات</p>
+
+    <button class="btn" onclick="location.reload()">
+        العب مجددًا
+    </button>
+
+</div>
+
+<script>
+
+let level = 1;
+let solved = 0;
+let seconds = 0;
+
+/* بدء اللعبة */
+function startGame(){
+
+    document.getElementById("splash").style.display = "none";
+
+    setInterval(() => {
+
+        seconds++;
+
+        let m = Math.floor(seconds / 60);
+        let s = seconds % 60;
+
+        document.getElementById("timer").innerText =
+            `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+
+    },1000);
+
+    loadLevel();
+}
+
+/* تحميل مستوى */
+function loadLevel(){
+
+    solved = 0;
+
+    document.getElementById("next-btn").style.display = "none";
+
+    document.getElementById("level-text").innerText =
+        `المستوى: ${level}`;
+
+    const area = document.getElementById("pieces-area");
+
+    area.innerHTML = "";
+
+    /* صورة جديدة كل مستوى */
+    const image =
+        `https://picsum.photos/300?random=${level}`;
+
+    for(let i=0;i<9;i++){
+
+        const piece = document.createElement("div");
+
+        piece.className = "piece";
+
+        piece.dataset.id = i;
+
+        const row = Math.floor(i / 3);
+        const col = i % 3;
+
+        piece.style.backgroundImage = `url(${image})`;
+
+        piece.style.backgroundPosition =
+            `-${col*100}px -${row*100}px`;
+
+        piece.style.left =
+            Math.random() * (window.innerWidth - 110) + "px";
+
+        piece.style.top =
+            Math.random() * 100 + "px";
+
+        makeDraggable(piece);
+
+        area.appendChild(piece);
+    }
+}
+
+/* السحب */
+function makeDraggable(piece){
+
+    let offsetX = 0;
+    let offsetY = 0;
+    let dragging = false;
+
+    piece.addEventListener("pointerdown",(e)=>{
+
+        dragging = true;
+
+        piece.setPointerCapture(e.pointerId);
+
+        offsetX = e.clientX - piece.offsetLeft;
+        offsetY = e.clientY - piece.offsetTop;
+
+        piece.style.zIndex = 1000;
+    });
+
+    piece.addEventListener("pointermove",(e)=>{
+
+        if(!dragging) return;
+
+        piece.style.left =
+            (e.clientX - offsetX) + "px";
+
+        piece.style.top =
+            (e.clientY - offsetY - 60) + "px";
+    });
+
+    piece.addEventListener("pointerup",()=>{
+
+        dragging = false;
+
+        checkSnap(piece);
+    });
+}
+
+/* التحقق من مكان القطعة */
+function checkSnap(piece){
+
+    const id = Number(piece.dataset.id);
+
+    const targets =
+        document.querySelectorAll(".target");
+
+    const target = targets[id];
+
+    const tRect = target.getBoundingClientRect();
+
+    const pRect = piece.getBoundingClientRect();
+
+    const board =
+        document.getElementById("board")
+        .getBoundingClientRect();
+
+    if(
+        Math.abs(pRect.left - tRect.left) < 35 &&
+        Math.abs(pRect.top - tRect.top) < 35
+    ){
+
+        piece.style.left =
+            (tRect.left - board.left) + "px";
+
+        piece.style.top =
+            (tRect.top - board.top + 75) + "px";
+
+        piece.style.pointerEvents = "none";
+
+        piece.style.zIndex = 1;
+
+        solved++;
+
+        if(solved === 9){
+
+            document.getElementById("next-btn")
+            .style.display = "block";
         }
+    }
+}
 
-        function loadLevel() {
-            const area = document.getElementById('pieces-area');
-            area.innerHTML = ""; solved = 0;
-            document.getElementById('next-btn').style.display = 'none';
-            document.getElementById('lvl-txt').innerText = `المستوى: ${level}`;
-            
-            const img = `https://picsum.photos{level}`;
+/* المستوى التالي */
+function nextLevel(){
 
-            for (let i = 0; i < 9; i++) {
-                const p = document.createElement('div');
-                // إعطاء أشكال مختلفة للقطع بشكل دوري
-                p.className = `piece p-shape-${i % 3}`;
-                p.style.backgroundImage = `url(${img})`;
-                
-                let r = Math.floor(i / 3), c = i % 3;
-                // تعديل الخلفية لتناسب النتوءات
-                p.style.backgroundPosition = `-${c * 100}px -${r * 100}px`;
-                
-                p.style.left = Math.random() * (window.innerWidth - 120) + 'px';
-                p.style.top = Math.random() * 40 + 'px';
-                
-                makeDraggable(p, i);
-                area.appendChild(p);
-            }
-        }
+    if(level >= 20){
 
-        function makeDraggable(el, id) {
-            let drag = false;
-            el.ontouchstart = () => { drag = true; el.style.zIndex = 100; };
-            window.ontouchmove = (e) => {
-                if (!drag) return;
-                let t = e.touches[0];
-                const container = document.getElementById('game-container').getBoundingClientRect();
-                el.style.left = (t.clientX - 60) + 'px';
-                el.style.top = (t.clientY - container.top - 150) + 'px';
-            };
-            window.ontouchend = () => { if (drag) { drag = false; checkSnap(el, id); } };
-        }
+        document.getElementById("winner")
+        .style.display = "flex";
 
-        function checkSnap(el, id) {
-            const targets = document.querySelectorAll('.target');
-            const tRect = targets[id].getBoundingClientRect();
-            const pRect = el.getBoundingClientRect();
-            const container = document.getElementById('game-container').getBoundingClientRect();
+        return;
+    }
 
-            // منطق الالتصاق
-            if (Math.abs(pRect.left - tRect.left) < 45 && Math.abs(pRect.top - tRect.top) < 45) {
-                el.style.left = tRect.left + 'px';
-                el.style.top = (tRect.top - container.top) + 'px';
-                el.style.pointerEvents = 'none'; el.style.zIndex = 1;
-                document.getElementById('pop-sound').play();
-                solved++;
-                if (solved === 9) document.getElementById('next-btn').style.display = 'block';
-            }
-        }
+    level++;
 
-        function goToNextLevel() {
-            if (level === 100) {
-                document.getElementById('win-dialog').style.display = 'flex';
-                document.getElementById('win-sound').play();
-            } else {
-                level++; loadLevel();
-                if(level % 5 === 0) alert("إعلان مكافأة: استمتع بالمستوى التالي!");
-            }
-        }
+    loadLevel();
+}
 
-        function toggleMute() {
-            muted = !muted;
-            document.getElementById('bg-music').muted = muted;
-            document.getElementById('mute-btn').innerText = muted ? "🔇" : "🔊";
-        }
-    </script>
+</script>
+
 </body>
 </html>
+```
