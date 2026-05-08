@@ -1,13 +1,14 @@
-```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
 <title>بحر الألغاز</title>
 
 <style>
+
 :root{
     --main:#e94560;
     --bg:#1a1a2e;
@@ -15,37 +16,39 @@
 }
 
 *{
+    margin:0;
+    padding:0;
     box-sizing:border-box;
     user-select:none;
     -webkit-user-select:none;
 }
 
 body{
-    margin:0;
-    overflow:hidden;
     background:var(--bg);
     color:white;
     font-family:sans-serif;
+    overflow:hidden;
+    height:100vh;
     display:flex;
     flex-direction:column;
-    height:100vh;
 }
 
 /* شاشة البداية */
+
 #splash{
     position:fixed;
     inset:0;
-    z-index:999;
+    z-index:9999;
     background:var(--bg);
     display:flex;
     flex-direction:column;
-    align-items:center;
     justify-content:center;
+    align-items:center;
 }
 
 .logo{
-    width:120px;
-    height:120px;
+    width:130px;
+    height:130px;
     border-radius:25px;
     overflow:hidden;
     border:4px solid var(--main);
@@ -65,8 +68,8 @@ body{
 }
 
 .btn{
-    background:var(--main);
     border:none;
+    background:var(--main);
     color:white;
     padding:14px 30px;
     border-radius:12px;
@@ -76,6 +79,7 @@ body{
 }
 
 /* الواجهة */
+
 #topbar{
     height:60px;
     background:var(--accent);
@@ -86,6 +90,8 @@ body{
     border-bottom:2px solid var(--main);
 }
 
+/* اللعبة */
+
 #game{
     flex:1;
     display:flex;
@@ -94,17 +100,18 @@ body{
     position:relative;
 }
 
-/* لوحة البازل */
+/* البورد */
+
 #board{
     width:300px;
     height:300px;
     margin-top:15px;
+    background:#0f3460;
+    border:4px solid var(--main);
     position:relative;
     display:grid;
     grid-template-columns:repeat(3,100px);
     grid-template-rows:repeat(3,100px);
-    border:3px solid var(--main);
-    background:#0f3460;
 }
 
 .target{
@@ -112,59 +119,99 @@ body{
 }
 
 /* منطقة القطع */
+
 #pieces-area{
     width:100%;
-    height:220px;
+    height:260px;
     position:relative;
-    margin-top:10px;
-    overflow:hidden;
+    overflow:visible;
 }
 
-/* القطع */
+/* قطع البازل */
+
 .piece{
     width:100px;
     height:100px;
     position:absolute;
     background-size:300px 300px;
     background-repeat:no-repeat;
-    border:1px solid rgba(255,255,255,0.1);
-    border-radius:10px;
-    box-shadow:0 4px 10px rgba(0,0,0,0.4);
+    cursor:grab;
+    z-index:10;
     touch-action:none;
+
+    border-radius:20px;
+
+    box-shadow:
+    0 4px 10px rgba(0,0,0,0.5);
+
+    clip-path:polygon(
+        0% 0%,
+        35% 0%,
+        50% 12%,
+        65% 0%,
+        100% 0%,
+        100% 35%,
+        88% 50%,
+        100% 65%,
+        100% 100%,
+        65% 100%,
+        50% 88%,
+        35% 100%,
+        0% 100%,
+        0% 65%,
+        12% 50%,
+        0% 35%
+    );
 }
 
 /* زر التالي */
+
 #next-btn{
-    margin-top:10px;
     display:none;
+    margin-top:10px;
     background:#2ecc71;
 }
 
-/* نافذة الفوز */
+/* الفوز */
+
 #winner{
     position:fixed;
     inset:0;
     background:rgba(0,0,0,0.95);
-    z-index:1000;
     display:none;
     flex-direction:column;
-    align-items:center;
     justify-content:center;
+    align-items:center;
+    z-index:99999;
     text-align:center;
 }
+
 </style>
 </head>
 
 <body>
 
-<!-- شاشة البداية -->
+<!-- أصوات -->
+
+<audio id="popSound"
+src="https://www.soundjay.com/buttons/sounds/button-16.mp3">
+</audio>
+
+<audio id="winSound"
+src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3">
+</audio>
+
+<!-- البداية -->
+
 <div id="splash">
 
     <div class="logo">
-        <img src="https://picsum.photos/200" />
+        <img src="https://picsum.photos/200">
     </div>
 
-    <h1>بحر الألغاز</h1>
+    <h1 style="margin-bottom:20px;">
+        بحر الألغاز
+    </h1>
 
     <button class="btn" onclick="startGame()">
         ابدأ اللعبة
@@ -172,47 +219,67 @@ body{
 
 </div>
 
-<!-- الواجهة -->
+<!-- الأعلى -->
+
 <div id="topbar">
 
-    <div id="level-text">المستوى: 1</div>
+    <div id="levelText">
+        المستوى: 1
+    </div>
 
-    <div id="timer">00:00</div>
+    <div id="timer">
+        00:00
+    </div>
 
 </div>
 
 <!-- اللعبة -->
+
 <div id="game">
 
     <div id="board">
+
         <div class="target"></div>
         <div class="target"></div>
         <div class="target"></div>
+
         <div class="target"></div>
         <div class="target"></div>
         <div class="target"></div>
+
         <div class="target"></div>
         <div class="target"></div>
         <div class="target"></div>
+
     </div>
 
-    <button id="next-btn" class="btn" onclick="nextLevel()">
+    <button id="next-btn"
+    class="btn"
+    onclick="nextLevel()">
+
         المستوى التالي
+
     </button>
 
     <div id="pieces-area"></div>
 
 </div>
 
-<!-- شاشة النهاية -->
+<!-- النهاية -->
+
 <div id="winner">
 
-    <h1>🏆 انتهت اللعبة 🏆</h1>
+    <h1 style="font-size:45px; color:gold;">
+        🏆 فزت 🏆
+    </h1>
 
-    <p>لقد أنهيت جميع المستويات</p>
+    <br>
 
-    <button class="btn" onclick="location.reload()">
+    <button class="btn"
+    onclick="location.reload()">
+
         العب مجددًا
+
     </button>
 
 </div>
@@ -224,19 +291,22 @@ let solved = 0;
 let seconds = 0;
 
 /* بدء اللعبة */
+
 function startGame(){
 
-    document.getElementById("splash").style.display = "none";
+    document.getElementById("splash")
+    .style.display = "none";
 
-    setInterval(() => {
+    setInterval(()=>{
 
         seconds++;
 
         let m = Math.floor(seconds / 60);
         let s = seconds % 60;
 
-        document.getElementById("timer").innerText =
-            `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        document.getElementById("timer")
+        .innerText =
+        `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 
     },1000);
 
@@ -244,44 +314,51 @@ function startGame(){
 }
 
 /* تحميل مستوى */
+
 function loadLevel(){
 
     solved = 0;
 
-    document.getElementById("next-btn").style.display = "none";
+    document.getElementById("next-btn")
+    .style.display = "none";
 
-    document.getElementById("level-text").innerText =
-        `المستوى: ${level}`;
+    document.getElementById("levelText")
+    .innerText = `المستوى: ${level}`;
 
-    const area = document.getElementById("pieces-area");
+    const area =
+    document.getElementById("pieces-area");
 
     area.innerHTML = "";
 
-    /* صورة جديدة كل مستوى */
-    const image =
-        `https://picsum.photos/300?random=${level}`;
+    const img =
+    `https://picsum.photos/300?random=${level}`;
 
     for(let i=0;i<9;i++){
 
-        const piece = document.createElement("div");
+        const piece =
+        document.createElement("div");
 
         piece.className = "piece";
 
         piece.dataset.id = i;
 
-        const row = Math.floor(i / 3);
-        const col = i % 3;
+        let row = Math.floor(i / 3);
+        let col = i % 3;
 
-        piece.style.backgroundImage = `url(${image})`;
+        piece.style.backgroundImage =
+        `url(${img})`;
 
         piece.style.backgroundPosition =
-            `-${col*100}px -${row*100}px`;
+        `-${col*100}px -${row*100}px`;
 
         piece.style.left =
-            Math.random() * (window.innerWidth - 110) + "px";
+        Math.random() *
+        (window.innerWidth - 120)
+        + "px";
 
         piece.style.top =
-            Math.random() * 100 + "px";
+        Math.random() * 120
+        + "px";
 
         makeDraggable(piece);
 
@@ -290,36 +367,43 @@ function loadLevel(){
 }
 
 /* السحب */
+
 function makeDraggable(piece){
+
+    let dragging = false;
 
     let offsetX = 0;
     let offsetY = 0;
-    let dragging = false;
 
     piece.addEventListener("pointerdown",(e)=>{
 
         dragging = true;
 
-        piece.setPointerCapture(e.pointerId);
+        offsetX =
+        e.clientX - piece.offsetLeft;
 
-        offsetX = e.clientX - piece.offsetLeft;
-        offsetY = e.clientY - piece.offsetTop;
+        offsetY =
+        e.clientY - piece.offsetTop;
 
-        piece.style.zIndex = 1000;
+        piece.style.zIndex = 999;
     });
 
-    piece.addEventListener("pointermove",(e)=>{
+    window.addEventListener("pointermove",(e)=>{
 
         if(!dragging) return;
 
         piece.style.left =
-            (e.clientX - offsetX) + "px";
+        (e.clientX - offsetX)
+        + "px";
 
         piece.style.top =
-            (e.clientY - offsetY - 60) + "px";
+        (e.clientY - offsetY - 60)
+        + "px";
     });
 
-    piece.addEventListener("pointerup",()=>{
+    window.addEventListener("pointerup",()=>{
+
+        if(!dragging) return;
 
         dragging = false;
 
@@ -327,55 +411,83 @@ function makeDraggable(piece){
     });
 }
 
-/* التحقق من مكان القطعة */
+/* فحص المكان */
+
 function checkSnap(piece){
 
-    const id = Number(piece.dataset.id);
+    const id =
+    Number(piece.dataset.id);
 
     const targets =
-        document.querySelectorAll(".target");
+    document.querySelectorAll(".target");
 
-    const target = targets[id];
+    const target =
+    targets[id];
 
-    const tRect = target.getBoundingClientRect();
+    const tRect =
+    target.getBoundingClientRect();
 
-    const pRect = piece.getBoundingClientRect();
+    const pRect =
+    piece.getBoundingClientRect();
 
-    const board =
-        document.getElementById("board")
-        .getBoundingClientRect();
+    const boardRect =
+    document.getElementById("board")
+    .getBoundingClientRect();
 
     if(
-        Math.abs(pRect.left - tRect.left) < 35 &&
-        Math.abs(pRect.top - tRect.top) < 35
+
+        Math.abs(
+            pRect.left - tRect.left
+        ) < 35
+
+        &&
+
+        Math.abs(
+            pRect.top - tRect.top
+        ) < 35
+
     ){
 
         piece.style.left =
-            (tRect.left - board.left) + "px";
+        (tRect.left - boardRect.left)
+        + "px";
 
         piece.style.top =
-            (tRect.top - board.top + 75) + "px";
+        (tRect.top - boardRect.top + 75)
+        + "px";
 
-        piece.style.pointerEvents = "none";
+        piece.style.pointerEvents =
+        "none";
 
         piece.style.zIndex = 1;
+
+        document
+        .getElementById("popSound")
+        .play();
 
         solved++;
 
         if(solved === 9){
 
-            document.getElementById("next-btn")
+            document
+            .getElementById("next-btn")
             .style.display = "block";
         }
     }
 }
 
-/* المستوى التالي */
+/* التالي */
+
 function nextLevel(){
 
     if(level >= 20){
 
-        document.getElementById("winner")
+        document
+        .getElementById("winSound")
+        .play();
+
+        document
+        .getElementById("winner")
         .style.display = "flex";
 
         return;
@@ -390,4 +502,3 @@ function nextLevel(){
 
 </body>
 </html>
-```
