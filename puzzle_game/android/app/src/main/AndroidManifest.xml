@@ -1,12 +1,16 @@
-<manifest xmlns:android="http://android.com"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.puzzle_game">
+
+    <!-- صلاحية الإنترنت -->
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:label="لعبة الألغاز"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
 
-        <!-- معرف تطبيق AdMob التجريبي (ضروري جداً لفتح اللعبة) -->
+        <!-- AdMob -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713"/>
@@ -16,21 +20,22 @@
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize">
-            
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
         </activity>
 
+        <!-- Flutter embedding -->
         <meta-data
             android:name="flutterEmbedding"
-            android:value="2" />
+            android:value="2"/>
+
     </application>
 
-    <!-- صلاحيات الإنترنت للإعلانات وصور الشبكة -->
-    <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>

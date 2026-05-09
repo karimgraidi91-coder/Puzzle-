@@ -6,34 +6,44 @@ plugins {
 
 android {
     namespace = "com.example.puzzle_game"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.puzzle_game"
-        // ضروري جداً لتشغيل Flame والإعلانات
-        minSdk = 21 
-        targetSdk = flutter.targetSdk
-        versionCode = flutterVersionCode.toInteger()
-        versionName = flutterVersionName
+        minSdk = 21
+        targetSdk = 35
+        versionCode = 1
+        versionName = "1.0"
+
+        multiDexEnabled = true
     }
 
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = false
+            isShrinkResources = false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(
+                org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+            )
         }
     }
 }
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation("androidx.multidex:multidex:2.0.1")
 }
