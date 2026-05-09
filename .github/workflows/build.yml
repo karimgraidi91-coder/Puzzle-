@@ -13,21 +13,21 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.13.0'
-
-      - name: Disable Flutter Analytics
-        run: flutter --disable-telemetry # لتخطي رسالة الترحيب التي أوقفت البناء
+          # أزلنا تحديد الإصدار ليأخذ أحدث نسخة مستقرة تلقائياً
+          cache: true 
 
       - name: Install dependencies
-        run: flutter pub get
-        working-directory: puzzle_game # الدخول للمجلد الصحيح تلقائياً
+        run: |
+          flutter --disable-telemetry
+          flutter pub get
+        working-directory: puzzle_game
 
       - name: Build APK
         run: flutter build apk --debug
-        working-directory: puzzle_game # الدخول للمجلد الصحيح تلقائياً
+        working-directory: puzzle_game
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: my-puzzle-game
+          name: puzzle-game-final
           path: puzzle_game/build/app/outputs/flutter-apk/app-debug.apk
