@@ -13,18 +13,19 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          cache: true 
+          cache: true
 
-      - name: Install dependencies
+      - name: Repair and Build
         run: |
-          # استخدام الأمر القديم المتوافق مع جميع الإصدارات
-          flutter config --no-analytics 
+          cd puzzle_game
+          flutter config --no-analytics
+          # حذف مجلد الأندرويد القديم وإعادة إنشائه بشكل سليم
+          rm -rf android
+          flutter create . --platforms android
+          # تحميل المكتبات
           flutter pub get
-        working-directory: puzzle_game
-
-      - name: Build APK
-        run: flutter build apk --debug
-        working-directory: puzzle_game
+          # بناء الـ APK
+          flutter build apk --debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
