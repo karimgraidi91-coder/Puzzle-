@@ -1,0 +1,47 @@
+name: puzzle_game
+description: "A professional puzzle game built with Flame Engine with AdMob and Yandex Ads integration."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.10.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # أيقونات iOS
+  cupertino_icons: ^1.0.8
+
+  # محرك الألعاب Flame الأساسي
+  flame: ^1.20.0
+  
+  # مكتبة الصوت الخاصة بـ Flame
+  flame_audio: ^2.2.0
+
+  # إعلانات جوجل (AdMob)
+  google_mobile_ads: ^5.1.0
+
+  # إعلانات ياندكس (Yandex Mobile Ads)
+  yandex_mobileads: ^8.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  
+  # قواعد التنسيق البرمجي
+  flutter_lints: ^3.0.0
+
+flutter:
+  # تفعيل نظام Material Design
+  uses-material-design: true
+
+  # تعريف مجلدات الصور والأصوات (تأكد من وجود المجلدات فعلياً)
+  assets:
+    - assets/images/
+    - assets/audio/
+    - assets/images/icon.png
+
+  # ملاحظة: إذا أضفت صوراً جديدة لاحقاً داخل المجلدات، 
+  # فسيتم التعرف عليها تلقائياً لأننا حددنا المجلد كاملاً بالـ (/).
