@@ -1,36 +1,33 @@
-name: Build Flutter APK
-
+name: Build APK
 on:
   push:
-    branches: [ "main" ] # سيعمل البناء عند كل "Push" لفرع main
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '17'
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.0' # نفس إصدارك الحالي
           channel: 'stable'
+          flutter-version: '3.13.0'
+
+      - name: Disable Flutter Analytics
+        run: flutter --disable-telemetry # لتخطي رسالة الترحيب التي أوقفت البناء
 
       - name: Install dependencies
         run: flutter pub get
+        working-directory: puzzle_game # الدخول للمجلد الصحيح تلقائياً
 
       - name: Build APK
-        run: flutter build apk --debug # بناء نسخة تجريبية سريعة
+        run: flutter build apk --debug
+        working-directory: puzzle_game # الدخول للمجلد الصحيح تلقائياً
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: puzzle-game-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: my-puzzle-game
+          path: puzzle_game/build/app/outputs/flutter-apk/app-debug.apk
